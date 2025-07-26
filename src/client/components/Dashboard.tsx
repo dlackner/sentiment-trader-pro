@@ -1,5 +1,5 @@
 import React from 'react'
-import { TrendingUp, AlertCircle, Activity, BarChart3, RefreshCw } from 'lucide-react'
+import { TrendingUp, AlertCircle, Activity, BarChart3, RefreshCw, DollarSign } from 'lucide-react'
 import TrendingStocks from './TrendingStocks'
 import SentimentChart from './SentimentChart'
 import AlertsFeed from './AlertsFeed'
@@ -9,7 +9,11 @@ import KeywordMap from './KeywordMap'
 import AutoRefresh from './AutoRefresh'
 import { useRefresh } from '../hooks/useRefresh'
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onNavigateToPricing: () => void
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onNavigateToPricing }) => {
   const { refresh, isRefreshing } = useRefresh()
   
   return (
@@ -24,16 +28,26 @@ const Dashboard: React.FC = () => {
             <AutoRefresh onRefresh={refresh} />
           </div>
         </div>
-        <button 
-          onClick={refresh}
-          disabled={isRefreshing}
-          className="flex items-center gap-2 px-4 py-2 bg-dark-300/50 hover:bg-dark-300 
-                     text-gray-400 hover:text-white rounded-lg transition-all group
-                     disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-          <span className="text-sm">{isRefreshing ? 'Refreshing...' : 'Refresh Data'}</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={onNavigateToPricing}
+            className="flex items-center gap-2 px-4 py-2 bg-accent-blue/20 hover:bg-accent-blue/30 
+                       text-accent-blue rounded-lg transition-all group"
+          >
+            <DollarSign className="w-4 h-4" />
+            <span className="text-sm">Pricing</span>
+          </button>
+          <button 
+            onClick={refresh}
+            disabled={isRefreshing}
+            className="flex items-center gap-2 px-4 py-2 bg-dark-300/50 hover:bg-dark-300 
+                       text-gray-400 hover:text-white rounded-lg transition-all group
+                       disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span className="text-sm">{isRefreshing ? 'Refreshing...' : 'Refresh Data'}</span>
+          </button>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
