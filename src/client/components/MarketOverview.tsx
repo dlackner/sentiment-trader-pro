@@ -1,6 +1,5 @@
 import React from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
-import { TrendingUp } from 'lucide-react'
 
 const sectorData = [
   { name: 'Technology', value: 35, sentiment: 82 },
@@ -30,7 +29,7 @@ const MarketOverview: React.FC = () => {
               paddingAngle={5}
               dataKey="value"
             >
-              {sectorData.map((entry, index) => (
+              {sectorData.map((_entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
