@@ -7,43 +7,183 @@ interface Keyword {
   text: string
   value: number
   trend: 'up' | 'down' | 'neutral'
-  accounts: string[]
+  sources: {
+    platform: 'x' | 'reddit'
+    accounts: string[]
+  }[]
 }
 
 const allKeywords: Keyword[] = [
-  { text: 'NVDA', value: 85, trend: 'up', accounts: ['@DeItaone', '@unusual_whales', '@zerohedge'] },
-  { text: 'AI', value: 78, trend: 'up', accounts: ['@DeItaone', '@zerohedge'] },
-  { text: 'earnings', value: 65, trend: 'neutral', accounts: ['@unusual_whales', '@FirstSquawk'] },
-  { text: 'breakout', value: 62, trend: 'up', accounts: ['@unusual_whales'] },
-  { text: 'Fed', value: 58, trend: 'down', accounts: ['@DeItaone', '@zerohedge', '@LiveSquawk'] },
-  { text: 'options', value: 55, trend: 'up', accounts: ['@unusual_whales'] },
-  { text: 'volume', value: 52, trend: 'up', accounts: ['@unusual_whales', '@FirstSquawk'] },
-  { text: 'Tesla', value: 48, trend: 'down', accounts: ['@DeItaone'] },
-  { text: 'support', value: 45, trend: 'neutral', accounts: ['@unusual_whales'] },
-  { text: 'resistance', value: 42, trend: 'neutral', accounts: ['@unusual_whales'] },
-  { text: 'bullish', value: 40, trend: 'up', accounts: ['@unusual_whales', '@zerohedge'] },
-  { text: 'crypto', value: 38, trend: 'down', accounts: ['@zerohedge'] },
-  { text: 'inflation', value: 35, trend: 'down', accounts: ['@DeItaone', '@zerohedge'] },
-  { text: 'rally', value: 32, trend: 'up', accounts: ['@FirstSquawk'] },
-  { text: 'dip', value: 30, trend: 'neutral', accounts: ['@unusual_whales'] },
+  { 
+    text: 'NVDA', 
+    value: 85, 
+    trend: 'up', 
+    sources: [
+      { platform: 'x', accounts: ['@DeItaone', '@unusual_whales', '@zerohedge'] },
+      { platform: 'reddit', accounts: ['r/wallstreetbets', 'r/investing'] }
+    ]
+  },
+  { 
+    text: 'AI', 
+    value: 78, 
+    trend: 'up', 
+    sources: [
+      { platform: 'x', accounts: ['@DeItaone', '@zerohedge'] },
+      { platform: 'reddit', accounts: ['r/investing', 'r/SecurityAnalysis'] }
+    ]
+  },
+  { 
+    text: 'earnings', 
+    value: 65, 
+    trend: 'neutral', 
+    sources: [
+      { platform: 'x', accounts: ['@unusual_whales', '@FirstSquawk'] },
+      { platform: 'reddit', accounts: ['r/investing', 'r/SecurityAnalysis'] }
+    ]
+  },
+  { 
+    text: 'breakout', 
+    value: 62, 
+    trend: 'up', 
+    sources: [
+      { platform: 'x', accounts: ['@unusual_whales'] },
+      { platform: 'reddit', accounts: ['r/wallstreetbets'] }
+    ]
+  },
+  { 
+    text: 'Fed', 
+    value: 58, 
+    trend: 'down', 
+    sources: [
+      { platform: 'x', accounts: ['@DeItaone', '@zerohedge', '@LiveSquawk'] },
+      { platform: 'reddit', accounts: ['r/investing'] }
+    ]
+  },
+  { 
+    text: 'options', 
+    value: 55, 
+    trend: 'up', 
+    sources: [
+      { platform: 'x', accounts: ['@unusual_whales'] },
+      { platform: 'reddit', accounts: ['r/options', 'r/wallstreetbets'] }
+    ]
+  },
+  { 
+    text: 'YOLO', 
+    value: 52, 
+    trend: 'up', 
+    sources: [
+      { platform: 'reddit', accounts: ['r/wallstreetbets'] }
+    ]
+  },
+  { 
+    text: 'Tesla', 
+    value: 48, 
+    trend: 'down', 
+    sources: [
+      { platform: 'x', accounts: ['@DeItaone'] },
+      { platform: 'reddit', accounts: ['r/wallstreetbets'] }
+    ]
+  },
+  { 
+    text: 'DDs', 
+    value: 45, 
+    trend: 'neutral', 
+    sources: [
+      { platform: 'reddit', accounts: ['r/wallstreetbets', 'r/SecurityAnalysis'] }
+    ]
+  },
+  { 
+    text: 'diamond hands', 
+    value: 42, 
+    trend: 'up', 
+    sources: [
+      { platform: 'reddit', accounts: ['r/wallstreetbets'] }
+    ]
+  },
+  { 
+    text: 'bullish', 
+    value: 40, 
+    trend: 'up', 
+    sources: [
+      { platform: 'x', accounts: ['@unusual_whales', '@zerohedge'] },
+      { platform: 'reddit', accounts: ['r/investing'] }
+    ]
+  },
+  { 
+    text: 'crypto', 
+    value: 38, 
+    trend: 'down', 
+    sources: [
+      { platform: 'x', accounts: ['@zerohedge'] }
+    ]
+  },
+  { 
+    text: 'inflation', 
+    value: 35, 
+    trend: 'down', 
+    sources: [
+      { platform: 'x', accounts: ['@DeItaone', '@zerohedge'] },
+      { platform: 'reddit', accounts: ['r/investing'] }
+    ]
+  },
+  { 
+    text: 'to the moon', 
+    value: 32, 
+    trend: 'up', 
+    sources: [
+      { platform: 'reddit', accounts: ['r/wallstreetbets'] }
+    ]
+  },
+  { 
+    text: 'value play', 
+    value: 30, 
+    trend: 'neutral', 
+    sources: [
+      { platform: 'reddit', accounts: ['r/ValueInvesting', 'r/SecurityAnalysis'] }
+    ]
+  },
 ]
 
 const KeywordMap: React.FC = () => {
-  const { trackedAccounts } = useAccounts()
+  const { trackedAccounts, trackedRedditSources } = useAccounts()
   const trackedHandles = trackedAccounts.map(acc => acc.handle)
+  const trackedSubreddits = trackedRedditSources.map(source => source.subreddit)
   
-  // Filter keywords to only show ones from tracked accounts
+  // Filter keywords to only show ones from tracked sources
   const filteredKeywords = useMemo(() => {
     return allKeywords.filter(keyword => 
-      keyword.accounts.some(account => trackedHandles.includes(account))
-    ).map(keyword => ({
-      ...keyword,
-      // Only show accounts that are being tracked
-      accounts: keyword.accounts.filter(account => trackedHandles.includes(account)),
-      // Adjust value based on how many tracked accounts mention it
-      value: Math.floor(keyword.value * (keyword.accounts.filter(account => trackedHandles.includes(account)).length / keyword.accounts.length))
-    })).filter(keyword => keyword.accounts.length > 0) // Remove keywords with no tracked accounts
-  }, [trackedHandles])
+      keyword.sources.some(source => {
+        if (source.platform === 'x') {
+          return source.accounts.some(account => trackedHandles.includes(account))
+        } else if (source.platform === 'reddit') {
+          return source.accounts.some(account => trackedSubreddits.includes(account))
+        }
+        return false
+      })
+    ).map(keyword => {
+      // Filter sources to only include tracked ones
+      const filteredSources = keyword.sources.map(source => ({
+        ...source,
+        accounts: source.accounts.filter(account => 
+          source.platform === 'x' 
+            ? trackedHandles.includes(account)
+            : trackedSubreddits.includes(account)
+        )
+      })).filter(source => source.accounts.length > 0)
+      
+      // Calculate total tracked accounts across all platforms
+      const totalTrackedAccounts = filteredSources.reduce((sum, source) => sum + source.accounts.length, 0)
+      const totalOriginalAccounts = keyword.sources.reduce((sum, source) => sum + source.accounts.length, 0)
+      
+      return {
+        ...keyword,
+        sources: filteredSources,
+        // Adjust value based on how many tracked accounts mention it
+        value: Math.floor(keyword.value * (totalTrackedAccounts / totalOriginalAccounts))
+      }
+    }).filter(keyword => keyword.sources.length > 0)
+  }, [trackedHandles, trackedSubreddits])
 
   const maxValue = Math.max(...(filteredKeywords.length > 0 ? filteredKeywords.map(k => k.value) : [1]))
   
@@ -73,7 +213,7 @@ const KeywordMap: React.FC = () => {
             Trending Keywords
           </h2>
           <p className="text-xs text-gray-500 mt-1">
-            From {trackedAccounts.length} tracked account{trackedAccounts.length !== 1 ? 's' : ''}
+            From {trackedAccounts.length} X account{trackedAccounts.length !== 1 ? 's' : ''} + {trackedRedditSources.length} subreddit{trackedRedditSources.length !== 1 ? 's' : ''}
           </p>
         </div>
         <div className="flex items-center gap-4 text-xs">
@@ -104,7 +244,7 @@ const KeywordMap: React.FC = () => {
             >
               <div
                 className="px-4 py-2 rounded-lg font-medium transition-all duration-300 
-                           hover:scale-110 hover:shadow-lg backdrop-blur-sm"
+                           hover:scale-110 hover:shadow-lg backdrop-blur-sm relative"
                 style={{
                   fontSize: `${getSize(keyword.value)}rem`,
                   color: getColor(keyword.trend, keyword.value),
@@ -116,19 +256,44 @@ const KeywordMap: React.FC = () => {
                 {keyword.value > 60 && (
                   <TrendingUp className="inline-block ml-1 w-4 h-4" />
                 )}
+                
+                {/* Platform indicators */}
+                <div className="absolute -top-1 -right-1 flex gap-0.5">
+                  {keyword.sources.some(s => s.platform === 'x') && (
+                    <div className="w-3 h-3 bg-accent-blue rounded-full text-[8px] flex items-center justify-center text-white font-bold">
+                      𝕏
+                    </div>
+                  )}
+                  {keyword.sources.some(s => s.platform === 'reddit') && (
+                    <div className="w-3 h-3 bg-orange-500 rounded-full text-[8px] flex items-center justify-center text-white font-bold">
+                      r
+                    </div>
+                  )}
+                </div>
               </div>
               
               {/* Tooltip */}
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 
                               opacity-0 group-hover:opacity-100 transition-opacity duration-200 
                               pointer-events-none z-10">
-                <div className="bg-dark-200 border border-dark-400 rounded-lg p-3 shadow-xl">
-                  <div className="text-sm font-medium mb-1">{keyword.text}</div>
-                  <div className="text-xs text-gray-400">
+                <div className="bg-dark-200 border border-dark-400 rounded-lg p-3 shadow-xl min-w-48">
+                  <div className="text-sm font-medium mb-2">{keyword.text}</div>
+                  <div className="text-xs text-gray-400 space-y-1">
                     <div>Mentions: {keyword.value}</div>
                     <div>Trend: {keyword.trend}</div>
-                    <div className="mt-1">Accounts:</div>
-                    <div className="text-xs">{keyword.accounts.join(', ')}</div>
+                    {keyword.sources.map((source, idx) => (
+                      <div key={idx} className="mt-2">
+                        <div className="flex items-center gap-1 text-gray-300">
+                          {source.platform === 'x' ? (
+                            <span className="text-accent-blue">𝕏</span>
+                          ) : (
+                            <span className="text-orange-500">r/</span>
+                          )}
+                          <span className="capitalize">{source.platform}</span>
+                        </div>
+                        <div className="text-xs ml-4">{source.accounts.join(', ')}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -178,8 +343,8 @@ const KeywordMap: React.FC = () => {
       
       {filteredKeywords.length === 0 && (
         <div className="text-center text-gray-400 mt-8">
-          <p>No keywords found from tracked accounts.</p>
-          <p className="text-sm mt-1">Enable tracking for some X accounts to see trending keywords.</p>
+          <p>No keywords found from tracked sources.</p>
+          <p className="text-sm mt-1">Enable tracking for X accounts or Reddit sources to see trending keywords.</p>
         </div>
       )}
     </div>

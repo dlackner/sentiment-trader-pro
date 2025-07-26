@@ -5,6 +5,7 @@ import SentimentChart from './SentimentChart'
 import AlertsFeed from './AlertsFeed'
 import MarketOverview from './MarketOverview'
 import AccountsManager from './AccountsManager'
+import RedditSourcesManager from './RedditSourcesManager'
 import KeywordMap from './KeywordMap'
 import AutoRefresh from './AutoRefresh'
 import { useRefresh } from '../hooks/useRefresh'
@@ -89,6 +90,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToPricing }) => {
         </div>
         <div className="space-y-6">
           <AccountsManager />
+          <RedditSourcesManager />
           <AlertsFeed />
           <MarketOverview />
         </div>
