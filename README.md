@@ -1,6 +1,6 @@
-# Sentiment Trader Pro
+# Mirror Lake
 
-A real-time social sentiment analysis dashboard for options trading, tracking X (Twitter) influencers and market trends.
+A portfolio sentiment intelligence platform that tracks social media influencers and analyzes market sentiment in real-time.
 
 ## Features
 
@@ -9,6 +9,9 @@ A real-time social sentiment analysis dashboard for options trading, tracking X 
 - 📈 Interactive charts showing sentiment over time
 - 🎯 Sector-based sentiment heatmaps
 - ⚡ WebSocket-powered live updates
+- 🐦 X (Twitter) account management and tracking
+- 🔤 Keyword visualization map showing trending terms
+- 👥 Multi-client support for portfolio management
 
 ## Tech Stack
 
@@ -45,3 +48,5 @@ This will start both the Express backend (port 5000) and Vite frontend (port 300
 - Historical data analysis
 - Options flow integration
 - AI-powered chat assistant
+- Client portfolio management
+- Custom watchlists per client

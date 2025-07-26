@@ -4,15 +4,17 @@ import TrendingStocks from './TrendingStocks'
 import SentimentChart from './SentimentChart'
 import AlertsFeed from './AlertsFeed'
 import MarketOverview from './MarketOverview'
+import AccountsManager from './AccountsManager'
+import KeywordMap from './KeywordMap'
 
 const Dashboard: React.FC = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <header className="mb-8">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-accent-blue to-accent-green bg-clip-text text-transparent">
-          Sentiment Trader Pro
+          Mirror Lake
         </h1>
-        <p className="text-gray-400 mt-2">Real-time social sentiment analysis for options trading</p>
+        <p className="text-gray-400 mt-2">Portfolio sentiment intelligence platform</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -49,9 +51,11 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <TrendingStocks />
+          <KeywordMap />
           <SentimentChart />
         </div>
         <div className="space-y-6">
+          <AccountsManager />
           <AlertsFeed />
           <MarketOverview />
         </div>
