@@ -1,46 +1,16 @@
 import React, { useState } from 'react'
 import { Plus, X, Twitter, TrendingUp, Users, Eye } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-interface Account {
-  id: string
-  handle: string
-  name: string
-  followers: string
-  avgEngagement: number
-  tracked: boolean
-}
-
-const mockAccounts: Account[] = [
-  { id: '1', handle: '@DeItaone', name: 'Walter Bloomberg', followers: '2.1M', avgEngagement: 8500, tracked: true },
-  { id: '2', handle: '@unusual_whales', name: 'Unusual Whales', followers: '1.8M', avgEngagement: 12000, tracked: true },
-  { id: '3', handle: '@FirstSquawk', name: 'First Squawk', followers: '482K', avgEngagement: 5200, tracked: false },
-  { id: '4', handle: '@zerohedge', name: 'ZeroHedge', followers: '1.7M', avgEngagement: 7800, tracked: true },
-  { id: '5', handle: '@LiveSquawk', name: 'LiveSquawk', followers: '234K', avgEngagement: 3100, tracked: false },
-]
+import { useAccounts } from '../context/AccountsContext'
 
 const AccountsManager: React.FC = () => {
-  const [accounts, setAccounts] = useState<Account[]>(() => {
-    const saved = localStorage.getItem('mirrorLakeAccounts')
-    return saved ? JSON.parse(saved) : mockAccounts
-  })
+  const { accounts, addAccount: addAccountToContext, removeAccount, toggleTracking } = useAccounts()
   const [showAddModal, setShowAddModal] = useState(false)
   const [newHandle, setNewHandle] = useState('')
 
-  // Save to localStorage whenever accounts change
-  React.useEffect(() => {
-    localStorage.setItem('mirrorLakeAccounts', JSON.stringify(accounts))
-  }, [accounts])
-
-  const toggleTracking = (id: string) => {
-    setAccounts(accounts.map(acc => 
-      acc.id === id ? { ...acc, tracked: !acc.tracked } : acc
-    ))
-  }
-
   const addAccount = () => {
     if (newHandle.trim()) {
-      const newAccount: Account = {
+      const newAccount = {
         id: Date.now().toString(),
         handle: newHandle.startsWith('@') ? newHandle : `@${newHandle}`,
         name: 'New Account',
@@ -48,14 +18,10 @@ const AccountsManager: React.FC = () => {
         avgEngagement: 0,
         tracked: true
       }
-      setAccounts([...accounts, newAccount])
+      addAccountToContext(newAccount)
       setNewHandle('')
       setShowAddModal(false)
     }
-  }
-
-  const removeAccount = (id: string) => {
-    setAccounts(accounts.filter(acc => acc.id !== id))
   }
 
   return (

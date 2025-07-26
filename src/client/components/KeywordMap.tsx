@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Hash, TrendingUp } from 'lucide-react'
+import { useAccounts } from '../context/AccountsContext'
 
 interface Keyword {
   text: string
@@ -9,7 +10,7 @@ interface Keyword {
   accounts: string[]
 }
 
-const mockKeywords: Keyword[] = [
+const allKeywords: Keyword[] = [
   { text: 'NVDA', value: 85, trend: 'up', accounts: ['@DeItaone', '@unusual_whales', '@zerohedge'] },
   { text: 'AI', value: 78, trend: 'up', accounts: ['@DeItaone', '@zerohedge'] },
   { text: 'earnings', value: 65, trend: 'neutral', accounts: ['@unusual_whales', '@FirstSquawk'] },
@@ -28,7 +29,23 @@ const mockKeywords: Keyword[] = [
 ]
 
 const KeywordMap: React.FC = () => {
-  const maxValue = Math.max(...mockKeywords.map(k => k.value))
+  const { trackedAccounts } = useAccounts()
+  const trackedHandles = trackedAccounts.map(acc => acc.handle)
+  
+  // Filter keywords to only show ones from tracked accounts
+  const filteredKeywords = useMemo(() => {
+    return allKeywords.filter(keyword => 
+      keyword.accounts.some(account => trackedHandles.includes(account))
+    ).map(keyword => ({
+      ...keyword,
+      // Only show accounts that are being tracked
+      accounts: keyword.accounts.filter(account => trackedHandles.includes(account)),
+      // Adjust value based on how many tracked accounts mention it
+      value: Math.floor(keyword.value * (keyword.accounts.filter(account => trackedHandles.includes(account)).length / keyword.accounts.length))
+    })).filter(keyword => keyword.accounts.length > 0) // Remove keywords with no tracked accounts
+  }, [trackedHandles])
+
+  const maxValue = Math.max(...(filteredKeywords.length > 0 ? filteredKeywords.map(k => k.value) : [1]))
   
   const getSize = (value: number) => {
     const normalized = value / maxValue
@@ -43,17 +60,22 @@ const KeywordMap: React.FC = () => {
   }
 
   const sortedKeywords = useMemo(() => 
-    [...mockKeywords].sort((a, b) => b.value - a.value),
-    []
+    [...filteredKeywords].sort((a, b) => b.value - a.value),
+    [filteredKeywords]
   )
 
   return (
     <div className="data-card">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold flex items-center gap-2">
-          <Hash className="w-5 h-5 text-accent-blue" />
-          Trending Keywords
-        </h2>
+        <div>
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <Hash className="w-5 h-5 text-accent-blue" />
+            Trending Keywords
+          </h2>
+          <p className="text-xs text-gray-500 mt-1">
+            From {trackedAccounts.length} tracked account{trackedAccounts.length !== 1 ? 's' : ''}
+          </p>
+        </div>
         <div className="flex items-center gap-4 text-xs">
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 bg-accent-green rounded-full" />
@@ -141,18 +163,25 @@ const KeywordMap: React.FC = () => {
 
       <div className="mt-4 grid grid-cols-3 gap-4 text-center">
         <div className="p-3 bg-dark-300/50 rounded-lg">
-          <div className="text-2xl font-bold text-accent-green">{mockKeywords.filter(k => k.trend === 'up').length}</div>
+          <div className="text-2xl font-bold text-accent-green">{filteredKeywords.filter(k => k.trend === 'up').length}</div>
           <div className="text-xs text-gray-400">Bullish Terms</div>
         </div>
         <div className="p-3 bg-dark-300/50 rounded-lg">
-          <div className="text-2xl font-bold text-accent-red">{mockKeywords.filter(k => k.trend === 'down').length}</div>
+          <div className="text-2xl font-bold text-accent-red">{filteredKeywords.filter(k => k.trend === 'down').length}</div>
           <div className="text-xs text-gray-400">Bearish Terms</div>
         </div>
         <div className="p-3 bg-dark-300/50 rounded-lg">
-          <div className="text-2xl font-bold text-accent-yellow">{mockKeywords.filter(k => k.trend === 'neutral').length}</div>
+          <div className="text-2xl font-bold text-accent-yellow">{filteredKeywords.filter(k => k.trend === 'neutral').length}</div>
           <div className="text-xs text-gray-400">Neutral Terms</div>
         </div>
       </div>
+      
+      {filteredKeywords.length === 0 && (
+        <div className="text-center text-gray-400 mt-8">
+          <p>No keywords found from tracked accounts.</p>
+          <p className="text-sm mt-1">Enable tracking for some X accounts to see trending keywords.</p>
+        </div>
+      )}
     </div>
   )
 }

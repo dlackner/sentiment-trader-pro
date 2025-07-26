@@ -22,7 +22,10 @@ const TrendingStocks: React.FC = () => {
   return (
     <div className="data-card">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold">Trending Stocks</h2>
+        <div>
+          <h2 className="text-xl font-bold">Trending Stocks</h2>
+          <p className="text-xs text-gray-500 mt-1">Mock data - will be from tracked accounts</p>
+        </div>
         <span className="text-sm text-gray-400">Last 15 minutes</span>
       </div>
       
