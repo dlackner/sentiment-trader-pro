@@ -1,20 +1,39 @@
 import React from 'react'
-import { TrendingUp, AlertCircle, Activity, BarChart3 } from 'lucide-react'
+import { TrendingUp, AlertCircle, Activity, BarChart3, RefreshCw } from 'lucide-react'
 import TrendingStocks from './TrendingStocks'
 import SentimentChart from './SentimentChart'
 import AlertsFeed from './AlertsFeed'
 import MarketOverview from './MarketOverview'
 import AccountsManager from './AccountsManager'
 import KeywordMap from './KeywordMap'
+import AutoRefresh from './AutoRefresh'
+import { useRefresh } from '../hooks/useRefresh'
 
 const Dashboard: React.FC = () => {
+  const { refresh, isRefreshing } = useRefresh()
+  
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-accent-blue to-accent-green bg-clip-text text-transparent">
-          Mirror Lake
-        </h1>
-        <p className="text-gray-400 mt-2">Portfolio sentiment intelligence platform</p>
+      <header className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-light tracking-widest text-white uppercase">
+            Mirror Lake
+          </h1>
+          <div className="flex items-center gap-4 mt-1">
+            <p className="text-gray-500 text-sm">Portfolio sentiment intelligence</p>
+            <AutoRefresh onRefresh={refresh} />
+          </div>
+        </div>
+        <button 
+          onClick={refresh}
+          disabled={isRefreshing}
+          className="flex items-center gap-2 px-4 py-2 bg-dark-300/50 hover:bg-dark-300 
+                     text-gray-400 hover:text-white rounded-lg transition-all group
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <span className="text-sm">{isRefreshing ? 'Refreshing...' : 'Refresh Data'}</span>
+        </button>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

@@ -20,9 +20,17 @@ const mockAccounts: Account[] = [
 ]
 
 const AccountsManager: React.FC = () => {
-  const [accounts, setAccounts] = useState(mockAccounts)
+  const [accounts, setAccounts] = useState<Account[]>(() => {
+    const saved = localStorage.getItem('mirrorLakeAccounts')
+    return saved ? JSON.parse(saved) : mockAccounts
+  })
   const [showAddModal, setShowAddModal] = useState(false)
   const [newHandle, setNewHandle] = useState('')
+
+  // Save to localStorage whenever accounts change
+  React.useEffect(() => {
+    localStorage.setItem('mirrorLakeAccounts', JSON.stringify(accounts))
+  }, [accounts])
 
   const toggleTracking = (id: string) => {
     setAccounts(accounts.map(acc => 
