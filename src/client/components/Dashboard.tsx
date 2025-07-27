@@ -19,9 +19,9 @@ const Dashboard: React.FC = () => {
       {/* Dashboard Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Live Dashboard</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Live Dashboard</h2>
           <div className="flex items-center gap-4 mt-1">
-            <p className="text-gray-400">Real-time sentiment analysis and market data</p>
+            <p className="text-gray-600 dark:text-gray-400">Real-time sentiment analysis and market data</p>
             <AutoRefresh onRefresh={refresh} />
           </div>
         </div>
@@ -30,8 +30,8 @@ const Dashboard: React.FC = () => {
           <button 
             onClick={refresh}
             disabled={isRefreshing}
-            className="flex items-center gap-2 px-4 py-2 bg-dark-300/50 hover:bg-dark-300 
-                       text-gray-400 hover:text-white rounded-lg transition-all group
+            className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-dark-300/50 hover:bg-gray-200 dark:hover:bg-dark-300 
+                       text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg transition-all group
                        disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -124,9 +124,9 @@ const StatCard: React.FC<StatCardProps> = ({ icon, title, value, subtitle, chang
           <div className="text-xs text-gray-500 mt-1">{details}</div>
         </div>
       </div>
-      <h3 className="text-gray-400 text-sm">{title}</h3>
-      <p className="text-2xl font-bold mt-1">{value}</p>
-      <p className="text-xs text-gray-500 mt-1">{subtitle}</p>
+      <h3 className="text-gray-600 dark:text-gray-400 text-sm">{title}</h3>
+      <p className="text-2xl font-bold mt-1 text-gray-900 dark:text-white">{value}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{subtitle}</p>
     </div>
   )
 }

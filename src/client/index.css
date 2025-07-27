@@ -4,18 +4,21 @@
 
 @layer base {
   body {
-    @apply bg-dark-100 text-white;
+    @apply bg-white dark:bg-dark-100 text-gray-900 dark:text-white;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
 @layer components {
   .glass-effect {
-    @apply backdrop-blur-lg bg-dark-200/50 border border-dark-400/50;
+    @apply backdrop-blur-lg bg-white/80 dark:bg-dark-200/50 border border-gray-200 dark:border-dark-400/50;
   }
   
   .data-card {
-    @apply glass-effect rounded-xl p-6 shadow-2xl;
+    @apply glass-effect rounded-xl p-6 shadow-lg dark:shadow-2xl 
+           bg-white/90 dark:bg-dark-200/80 
+           border border-gray-200/50 dark:border-dark-400/50;
   }
   
   .trend-up {
@@ -24,5 +27,14 @@
   
   .trend-down {
     @apply text-accent-red;
+  }
+  
+  /* Light theme specific overrides */
+  .light .data-card {
+    @apply bg-white/95 border-gray-200/80 shadow-md;
+  }
+  
+  .light .glass-effect {
+    @apply bg-white/90 border-gray-200/60;
   }
 }
