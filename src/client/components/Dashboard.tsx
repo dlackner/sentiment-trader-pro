@@ -1,5 +1,5 @@
 import React from 'react'
-import { TrendingUp, AlertCircle, Activity, BarChart3, RefreshCw } from 'lucide-react'
+import { TrendingUp, AlertCircle, Activity, BarChart3, RefreshCw, Target, Zap } from 'lucide-react'
 import TrendingStocks from './TrendingStocks'
 import SentimentChart from './SentimentChart'
 import AlertsFeed from './AlertsFeed'
@@ -8,6 +8,8 @@ import KeywordMap from './KeywordMap'
 import AdvancedSearch from './AdvancedSearch'
 import ConnectionStatus from './ConnectionStatus'
 import AutoRefresh from './AutoRefresh'
+import OptionsFlow from './OptionsFlow'
+import VolatilityTracker from './VolatilityTracker'
 import { useRefresh } from '../hooks/useRefresh'
 
 const Dashboard: React.FC = () => {
@@ -59,17 +61,17 @@ const Dashboard: React.FC = () => {
           trend="up"
         />
         <StatCard
-          icon={<Activity className="w-6 h-6" />}
-          title="Volatility Spike"
-          value="$NVDA"
-          change="High"
+          icon={<Zap className="w-6 h-6" />}
+          title="Options Flow"
+          value="2"
+          change="Whale alerts"
           trend="neutral"
         />
         <StatCard
-          icon={<BarChart3 className="w-6 h-6" />}
-          title="Top Sector"
-          value="Tech"
-          change="+4.2%"
+          icon={<Target className="w-6 h-6" />}
+          title="High IV Plays"
+          value="3"
+          change="Opportunities"
           trend="up"
         />
       </div>
@@ -78,6 +80,10 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <TrendingStocks />
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <OptionsFlow />
+            <VolatilityTracker />
+          </div>
           <KeywordMap />
           <SentimentChart />
         </div>

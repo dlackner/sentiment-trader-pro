@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Filter, TrendingUp, MessageSquare, Hash, Clock, X } from 'lucide-react'
+import { Search, Filter, TrendingUp, MessageSquare, Hash, Clock, X, Zap } from 'lucide-react'
 
 interface SearchResult {
   id: string
@@ -11,13 +11,15 @@ interface SearchResult {
 }
 
 const mockSearchResults: SearchResult[] = [
-  { id: '1', type: 'stock', title: 'NVDA', subtitle: 'NVIDIA Corporation - $891.52 (+1.42%)', data: { price: 891.52, change: 1.42 } },
-  { id: '2', type: 'stock', title: 'TSLA', subtitle: 'Tesla Inc - $248.73 (-2.05%)', data: { price: 248.73, change: -2.05 } },
-  { id: '3', type: 'keyword', title: 'AI', subtitle: 'Trending keyword - 78 mentions', data: { mentions: 78, trend: 'up' } },
-  { id: '4', type: 'account', title: '@unusual_whales', subtitle: 'X Account - 1.8M followers', data: { followers: '1.8M', platform: 'x' } },
-  { id: '5', type: 'subreddit', title: 'r/wallstreetbets', subtitle: 'Reddit - 15.1M members', data: { members: '15.1M', platform: 'reddit' } },
-  { id: '6', type: 'keyword', title: 'earnings', subtitle: 'Trending keyword - 65 mentions', data: { mentions: 65, trend: 'neutral' } },
-  { id: '7', type: 'stock', title: 'AMD', subtitle: 'Advanced Micro Devices - $152.34 (+6.21%)', data: { price: 152.34, change: 6.21 } },
+  { id: '1', type: 'stock', title: 'NVDA', subtitle: 'NVIDIA Corp - High options volume, IV 45%', data: { price: 891.52, change: 1.42, iv: 45, optionsVol: 'High' } },
+  { id: '2', type: 'stock', title: 'TSLA', subtitle: 'Tesla Inc - Unusual whale activity detected', data: { price: 248.73, change: -2.05, iv: 52, optionsVol: 'Unusual' } },
+  { id: '3', type: 'keyword', title: 'earnings beat', subtitle: 'Options play opportunity - 12 stocks mentioned', data: { mentions: 78, trend: 'up', tradingOpportunity: true } },
+  { id: '4', type: 'account', title: '@unusual_whales', subtitle: 'Options flow tracker - Recent NVDA alert', data: { followers: '1.8M', platform: 'x', expertise: 'options' } },
+  { id: '5', type: 'subreddit', title: 'r/SecurityAnalysis', subtitle: 'Value plays discussion - 45 new posts', data: { members: '186K', platform: 'reddit', focus: 'analysis' } },
+  { id: '6', type: 'keyword', title: 'gamma squeeze', subtitle: 'High volatility play - 8 tickers flagged', data: { mentions: 65, trend: 'up', tradingOpportunity: true } },
+  { id: '7', type: 'stock', title: 'AMD', subtitle: 'Advanced Micro - Breaking resistance, high call volume', data: { price: 152.34, change: 6.21, iv: 38, optionsVol: 'High' } },
+  { id: '8', type: 'keyword', title: 'short squeeze', subtitle: 'Momentum play - 15 mentions last hour', data: { mentions: 42, trend: 'up', tradingOpportunity: true } },
+  { id: '9', type: 'stock', title: 'SPY', subtitle: 'S&P 500 ETF - Put/call ratio 0.8, oversold', data: { price: 456.78, change: -0.32, iv: 18, putCallRatio: 0.8 } },
 ]
 
 interface Filter {
@@ -32,12 +34,12 @@ const AdvancedSearch: React.FC = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [searchResults, setSearchResults] = useState<SearchResult[]>([])
   const [filters, setFilters] = useState<Filter[]>([
-    { id: 'stocks', name: 'Stocks', active: true, color: 'accent-blue' },
-    { id: 'keywords', name: 'Keywords', active: true, color: 'accent-green' },
-    { id: 'accounts', name: 'X Accounts', active: true, color: 'accent-yellow' },
-    { id: 'subreddits', name: 'Subreddits', active: true, color: 'orange-500' },
+    { id: 'stocks', name: 'High IV', active: true, color: 'accent-blue' },
+    { id: 'keywords', name: 'Options Plays', active: true, color: 'accent-green' },
+    { id: 'accounts', name: 'Flow Trackers', active: true, color: 'accent-yellow' },
+    { id: 'subreddits', name: 'Analysis', active: false, color: 'orange-500' },
   ])
-  const [recentSearches, setRecentSearches] = useState(['NVDA', 'options', '@DeItaone', 'r/investing'])
+  const [recentSearches, setRecentSearches] = useState(['gamma squeeze', 'NVDA calls', 'earnings plays', 'unusual options'])
   const searchRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -105,7 +107,7 @@ const AdvancedSearch: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-              placeholder="Search stocks, keywords, accounts..."
+              placeholder="Search tickers, options plays, sentiment..."
               className="w-full pl-10 pr-10 py-3 bg-dark-300/50 border border-dark-400/50 
                          rounded-lg text-white placeholder-gray-400 
                          focus:border-accent-blue focus:bg-dark-300 focus:outline-none
@@ -196,10 +198,22 @@ const AdvancedSearch: React.FC = () => {
                         <div className="text-sm text-gray-400">{result.subtitle}</div>
                       </div>
                       {result.type === 'stock' && result.data && (
-                        <div className={`text-sm font-mono ${
-                          result.data.change >= 0 ? 'text-accent-green' : 'text-accent-red'
-                        }`}>
-                          {result.data.change >= 0 ? '+' : ''}{result.data.change}%
+                        <div className="text-right">
+                          <div className={`text-sm font-mono ${
+                            result.data.change >= 0 ? 'text-accent-green' : 'text-accent-red'
+                          }`}>
+                            {result.data.change >= 0 ? '+' : ''}{result.data.change}%
+                          </div>
+                          {result.data.iv && (
+                            <div className="text-xs text-gray-400">
+                              IV: {result.data.iv}%
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {result.type === 'keyword' && result.data?.tradingOpportunity && (
+                        <div className="flex items-center text-accent-yellow">
+                          <Zap className="w-3 h-3" />
                         </div>
                       )}
                     </div>

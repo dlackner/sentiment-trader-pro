@@ -6,7 +6,7 @@ interface AutoRefreshProps {
   intervalMinutes?: number
 }
 
-const AutoRefresh: React.FC<AutoRefreshProps> = ({ onRefresh, intervalMinutes = 5 }) => {
+const AutoRefresh: React.FC<AutoRefreshProps> = ({ onRefresh, intervalMinutes = 15 }) => {
   const [nextRefresh, setNextRefresh] = useState<Date>(new Date(Date.now() + intervalMinutes * 60 * 1000))
   const [timeLeft, setTimeLeft] = useState('')
 
