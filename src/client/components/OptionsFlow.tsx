@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingUp, TrendingDown, DollarSign, Clock, Zap } from 'lucide-react'
+import { TrendingUp, TrendingDown, DollarSign, Clock, Zap, Copy, Target } from 'lucide-react'
 
 interface OptionsFlow {
   id: string
@@ -67,6 +67,14 @@ const mockOptionsFlow: OptionsFlow[] = [
 ]
 
 const OptionsFlow: React.FC = () => {
+  const [copied, setCopied] = useState<string | null>(null)
+
+  const copyToClipboard = (flow: OptionsFlow) => {
+    const text = `${flow.ticker} ${flow.strike}${flow.type === 'call' ? 'C' : 'P'} ${flow.expiry} - $${flow.premium} - ${flow.direction.toUpperCase()}`
+    navigator.clipboard.writeText(text)
+    setCopied(flow.id)
+    setTimeout(() => setCopied(null), 2000)
+  }
   const getSizeColor = (size: OptionsFlow['size']) => {
     switch (size) {
       case 'whale': return 'text-accent-red'
@@ -108,38 +116,58 @@ const OptionsFlow: React.FC = () => {
             transition={{ delay: index * 0.1 }}
             className="p-3 rounded-lg bg-dark-300/30 hover:bg-dark-300/50 transition-all"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className={`${getSizeColor(flow.size)}`}>
-                  {getSizeIcon(flow.size)}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-accent-blue">${flow.ticker}</span>
-                    <span className="text-sm text-gray-400">
-                      ${flow.strike}{flow.type === 'call' ? 'C' : 'P'} {flow.expiry}
-                    </span>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`${getSizeColor(flow.size)}`}>
+                    {getSizeIcon(flow.size)}
                   </div>
-                  <div className="text-xs text-gray-500 flex items-center gap-2">
-                    <span>{flow.volume.toLocaleString()} vol</span>
-                    <span>•</span>
-                    <span className={getDirectionColor(flow.direction)}>
-                      {flow.direction.toUpperCase()}
-                    </span>
-                    <span>•</span>
-                    <span>${flow.premium}</span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-accent-blue">${flow.ticker}</span>
+                      <span className="text-sm text-gray-400">
+                        ${flow.strike}{flow.type === 'call' ? 'C' : 'P'} {flow.expiry}
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-500 flex items-center gap-2">
+                      <span>{flow.volume.toLocaleString()} vol</span>
+                      <span>•</span>
+                      <span className={getDirectionColor(flow.direction)}>
+                        {flow.direction.toUpperCase()}
+                      </span>
+                      <span>•</span>
+                      <span>${flow.premium}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="text-right">
+                  <div className={`text-sm font-medium ${getSizeColor(flow.size)}`}>
+                    {flow.size.toUpperCase()}
+                  </div>
+                  <div className="text-xs text-gray-500 flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {flow.time}
                   </div>
                 </div>
               </div>
-              
-              <div className="text-right">
-                <div className={`text-sm font-medium ${getSizeColor(flow.size)}`}>
-                  {flow.size.toUpperCase()}
-                </div>
-                <div className="text-xs text-gray-500 flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {flow.time}
-                </div>
+
+              {/* Quick Actions */}
+              <div className="flex items-center justify-between pt-2 border-t border-dark-400/20">
+                <button
+                  onClick={() => copyToClipboard(flow)}
+                  className="flex items-center gap-1 px-2 py-1 bg-dark-400/30 hover:bg-dark-400/50 
+                           text-gray-400 hover:text-white text-xs rounded transition-all"
+                >
+                  <Copy className="w-3 h-3" />
+                  {copied === flow.id ? 'Copied!' : 'Copy'}
+                </button>
+                
+                <button className="flex items-center gap-1 px-2 py-1 bg-accent-green/20 hover:bg-accent-green/30 
+                                 text-accent-green text-xs rounded transition-all border border-accent-green/30">
+                  <Target className="w-3 h-3" />
+                  Follow
+                </button>
               </div>
             </div>
           </motion.div>

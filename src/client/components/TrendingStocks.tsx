@@ -1,5 +1,5 @@
-import React from 'react'
-import { TrendingUp, TrendingDown, Target, Zap, Activity } from 'lucide-react'
+import React, { useState } from 'react'
+import { TrendingUp, TrendingDown, Target, Zap, Activity, Plus, Bell, Eye } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface Stock {
@@ -23,6 +23,32 @@ const mockStocks: Stock[] = [
 ]
 
 const TrendingStocks: React.FC = () => {
+  const [watchlist, setWatchlist] = useState<Set<string>>(new Set())
+  const [alerts, setAlerts] = useState<Set<string>>(new Set())
+
+  const addToWatchlist = (ticker: string) => {
+    setWatchlist(prev => new Set([...prev, ticker]))
+  }
+
+  const removeFromWatchlist = (ticker: string) => {
+    setWatchlist(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(ticker)
+      return newSet
+    })
+  }
+
+  const toggleAlert = (ticker: string) => {
+    setAlerts(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(ticker)) {
+        newSet.delete(ticker)
+      } else {
+        newSet.add(ticker)
+      }
+      return newSet
+    })
+  }
   const getOpportunityColor = (opportunity: Stock['opportunity']) => {
     switch (opportunity) {
       case 'momentum': return 'text-accent-green'
@@ -111,8 +137,36 @@ const TrendingStocks: React.FC = () => {
               </div>
             </div>
 
-            <div className="text-xs text-gray-400 italic">
-              Catalyst: {stock.catalyst}
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-dark-400/20">
+              <div className="text-xs text-gray-400 italic">
+                Catalyst: {stock.catalyst}
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => watchlist.has(stock.ticker) ? removeFromWatchlist(stock.ticker) : addToWatchlist(stock.ticker)}
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-all ${
+                    watchlist.has(stock.ticker)
+                      ? 'bg-accent-blue/20 text-accent-blue border border-accent-blue/30'
+                      : 'bg-dark-400/30 text-gray-400 hover:bg-dark-400/50 border border-dark-400/30'
+                  }`}
+                >
+                  {watchlist.has(stock.ticker) ? <Eye className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+                  {watchlist.has(stock.ticker) ? 'Watching' : 'Watch'}
+                </button>
+                
+                <button
+                  onClick={() => toggleAlert(stock.ticker)}
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-xs transition-all ${
+                    alerts.has(stock.ticker)
+                      ? 'bg-accent-yellow/20 text-accent-yellow border border-accent-yellow/30'
+                      : 'bg-dark-400/30 text-gray-400 hover:bg-dark-400/50 border border-dark-400/30'
+                  }`}
+                >
+                  <Bell className="w-3 h-3" />
+                  {alerts.has(stock.ticker) ? 'ON' : 'Alert'}
+                </button>
+              </div>
             </div>
           </motion.div>
         ))}
