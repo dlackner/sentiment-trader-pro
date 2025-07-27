@@ -1,0 +1,223 @@
+import React, { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Search, Filter, TrendingUp, MessageSquare, Hash, Clock, X } from 'lucide-react'
+
+interface SearchResult {
+  id: string
+  type: 'stock' | 'keyword' | 'account' | 'subreddit'
+  title: string
+  subtitle: string
+  data?: any
+}
+
+const mockSearchResults: SearchResult[] = [
+  { id: '1', type: 'stock', title: 'NVDA', subtitle: 'NVIDIA Corporation - $891.52 (+1.42%)', data: { price: 891.52, change: 1.42 } },
+  { id: '2', type: 'stock', title: 'TSLA', subtitle: 'Tesla Inc - $248.73 (-2.05%)', data: { price: 248.73, change: -2.05 } },
+  { id: '3', type: 'keyword', title: 'AI', subtitle: 'Trending keyword - 78 mentions', data: { mentions: 78, trend: 'up' } },
+  { id: '4', type: 'account', title: '@unusual_whales', subtitle: 'X Account - 1.8M followers', data: { followers: '1.8M', platform: 'x' } },
+  { id: '5', type: 'subreddit', title: 'r/wallstreetbets', subtitle: 'Reddit - 15.1M members', data: { members: '15.1M', platform: 'reddit' } },
+  { id: '6', type: 'keyword', title: 'earnings', subtitle: 'Trending keyword - 65 mentions', data: { mentions: 65, trend: 'neutral' } },
+  { id: '7', type: 'stock', title: 'AMD', subtitle: 'Advanced Micro Devices - $152.34 (+6.21%)', data: { price: 152.34, change: 6.21 } },
+]
+
+interface Filter {
+  id: string
+  name: string
+  active: boolean
+  color: string
+}
+
+const AdvancedSearch: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([])
+  const [filters, setFilters] = useState<Filter[]>([
+    { id: 'stocks', name: 'Stocks', active: true, color: 'accent-blue' },
+    { id: 'keywords', name: 'Keywords', active: true, color: 'accent-green' },
+    { id: 'accounts', name: 'X Accounts', active: true, color: 'accent-yellow' },
+    { id: 'subreddits', name: 'Subreddits', active: true, color: 'orange-500' },
+  ])
+  const [recentSearches, setRecentSearches] = useState(['NVDA', 'options', '@DeItaone', 'r/investing'])
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      const filtered = mockSearchResults.filter(result => {
+        const matchesQuery = result.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            result.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
+        
+        const typeMap = {
+          stock: 'stocks',
+          keyword: 'keywords', 
+          account: 'accounts',
+          subreddit: 'subreddits'
+        }
+        
+        const filterActive = filters.find(f => f.id === typeMap[result.type])?.active
+        
+        return matchesQuery && filterActive
+      })
+      
+      setSearchResults(filtered.slice(0, 6))
+    } else {
+      setSearchResults([])
+    }
+  }, [searchQuery, filters])
+
+  const toggleFilter = (filterId: string) => {
+    setFilters(prev => prev.map(f => 
+      f.id === filterId ? { ...f, active: !f.active } : f
+    ))
+  }
+
+  const getResultIcon = (type: SearchResult['type']) => {
+    switch (type) {
+      case 'stock': return <TrendingUp className="w-4 h-4 text-accent-blue" />
+      case 'keyword': return <Hash className="w-4 h-4 text-accent-green" />
+      case 'account': return <MessageSquare className="w-4 h-4 text-accent-yellow" />
+      case 'subreddit': return <MessageSquare className="w-4 h-4 text-orange-500" />
+    }
+  }
+
+  const handleResultClick = (result: SearchResult) => {
+    setSearchQuery(result.title)
+    setRecentSearches(prev => [result.title, ...prev.filter(s => s !== result.title)].slice(0, 4))
+    setIsSearchFocused(false)
+  }
+
+  const clearSearch = () => {
+    setSearchQuery('')
+    setSearchResults([])
+  }
+
+  return (
+    <div className="relative" ref={searchRef}>
+      {/* Search Bar */}
+      <div className={`relative transition-all duration-300 ${
+        isSearchFocused ? 'transform scale-105' : ''
+      }`}>
+        <div className="flex items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+              placeholder="Search stocks, keywords, accounts..."
+              className="w-full pl-10 pr-10 py-3 bg-dark-300/50 border border-dark-400/50 
+                         rounded-lg text-white placeholder-gray-400 
+                         focus:border-accent-blue focus:bg-dark-300 focus:outline-none
+                         transition-all duration-200"
+            />
+            {searchQuery && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+          
+          {/* Filter Button */}
+          <button className="ml-3 p-3 bg-dark-300/50 border border-dark-400/50 rounded-lg
+                           hover:bg-dark-300 transition-colors group">
+            <Filter className="w-5 h-5 text-gray-400 group-hover:text-white" />
+          </button>
+        </div>
+
+        {/* Filter Pills */}
+        <div className="flex gap-2 mt-3">
+          {filters.map((filter) => (
+            <button
+              key={filter.id}
+              onClick={() => toggleFilter(filter.id)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                filter.active
+                  ? `bg-${filter.color}/20 text-${filter.color} border border-${filter.color}/30`
+                  : 'bg-dark-400/30 text-gray-400 border border-dark-400/30'
+              }`}
+            >
+              {filter.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Search Results Dropdown */}
+      <AnimatePresence>
+        {(isSearchFocused || searchQuery) && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            className="absolute top-full left-0 right-0 mt-2 bg-dark-200 border border-dark-400/50 
+                       rounded-lg shadow-2xl backdrop-blur-lg z-50 overflow-hidden"
+          >
+            {searchQuery.length === 0 ? (
+              /* Recent Searches */
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Clock className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-400">Recent Searches</span>
+                </div>
+                <div className="space-y-2">
+                  {recentSearches.map((search, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSearchQuery(search)}
+                      className="w-full text-left px-3 py-2 rounded-lg hover:bg-dark-300/50 
+                                 text-gray-300 text-sm transition-colors"
+                    >
+                      {search}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : searchResults.length > 0 ? (
+              /* Search Results */
+              <div className="max-h-96 overflow-y-auto">
+                {searchResults.map((result, index) => (
+                  <motion.button
+                    key={result.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => handleResultClick(result)}
+                    className="w-full p-4 hover:bg-dark-300/50 transition-colors text-left
+                               border-b border-dark-400/30 last:border-b-0"
+                  >
+                    <div className="flex items-start gap-3">
+                      {getResultIcon(result.type)}
+                      <div className="flex-1">
+                        <div className="font-medium text-white">{result.title}</div>
+                        <div className="text-sm text-gray-400">{result.subtitle}</div>
+                      </div>
+                      {result.type === 'stock' && result.data && (
+                        <div className={`text-sm font-mono ${
+                          result.data.change >= 0 ? 'text-accent-green' : 'text-accent-red'
+                        }`}>
+                          {result.data.change >= 0 ? '+' : ''}{result.data.change}%
+                        </div>
+                      )}
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            ) : (
+              /* No Results */
+              <div className="p-4 text-center text-gray-400">
+                <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p>No results found for "{searchQuery}"</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+export default AdvancedSearch
